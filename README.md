@@ -4,21 +4,21 @@
 
 # AI Job Search
 
-An AI-powered job application framework built on [Claude Code](https://claude.com/claude-code). Fork it, fill in your profile, and let Claude evaluate job postings, tailor your CV, write cover letters, and prepare you for interviews.
+An AI-powered job application framework built on [Claude Code](https://claude.com/claude-code). Fork it, fill in your profile, and let Claude evaluate job postings, tailor your resume, write cover letters, and prepare you for interviews.
 
 ## What this is
 
-A structured workflow that turns Claude Code into a full-stack job application assistant. The core workflow (self-profiling, fit evaluation, and the drafter-reviewer application pipeline) is **language- and country-agnostic**. The job portal search skills are built for the Danish market (Jobindex, Jobnet, Akademikernes Jobbank, etc.), but the pattern is designed to be swapped for your local job boards.
+A structured workflow that turns Claude Code into a full-stack job application assistant, tuned for the **US job market**: US-standard resumes (US Letter, 1-2 pages, no References section, ATS-aware), work-authorization screening, and job search across US boards. Job search is powered by the WebSearch-based `/scrape` skill targeting LinkedIn, Indeed, Glassdoor, ZipRecruiter, Google Jobs, and company career pages - no API keys or extra runtimes required.
 
 ```
 /setup          /scrape              /apply <url>
   |                |                     |
   v                v                     v
-Fill in        Search job           Evaluate fit
-your profile   portals              Score & recommend
+Fill in        Search US            Evaluate fit
+your profile   job boards           Score & recommend
   |                |                     |
   v                v                     v
-Profile        Present matches      Draft CV + Cover Letter
+Profile        Present matches      Draft Resume + Cover Letter
 files ready    with fit ratings     (LaTeX, tailored)
                    |                     |
                    v                     v
@@ -31,9 +31,10 @@ The framework encodes career guidance best practices, including structured evalu
 ## Prerequisites
 
 - [Claude Code](https://claude.com/claude-code) (CLI)
-- Python 3.10+
-- [Bun](https://bun.sh) (for Danish job search CLI tools)
-- LaTeX distribution with `lualatex` and `xelatex`: [TeX Live](https://tug.org/texlive/) or [MiKTeX](https://miktex.org/). The CV compiles with `lualatex` (pdflatex often fails on modern MiKTeX installs with `fontawesome5` font-expansion errors); the cover letter compiles with `xelatex` because `cover.cls` requires `fontspec`.
+- Python 3.10+ (only for the optional salary benchmarking tool)
+- LaTeX distribution with `lualatex` and `xelatex`: [TeX Live](https://tug.org/texlive/) or [MiKTeX](https://miktex.org/). The resume compiles with `lualatex` (pdflatex often fails on modern MiKTeX installs with `fontawesome5` font-expansion errors); the cover letter compiles with `xelatex` because `cover.cls` requires `fontspec`.
+
+Job search needs nothing beyond Claude Code itself - it runs on the built-in WebSearch/WebFetch tools.
 
 ## Quick start
 
@@ -44,16 +45,7 @@ gh repo fork MadsLorentzen/ai-job-search --clone
 cd ai-job-search
 ```
 
-### 2. Install job search tools
-
-```bash
-cd .agents/skills/jobbank-search/cli && bun install && cd ../../../..
-cd .agents/skills/jobdanmark-search/cli && bun install && cd ../../../..
-cd .agents/skills/jobindex-search/cli && bun install && cd ../../../..
-cd .agents/skills/jobnet-search/cli && bun install && cd ../../../..
-```
-
-### 3. Set up your profile
+### 2. Set up your profile
 
 ```bash
 claude
@@ -61,29 +53,29 @@ claude
 /setup
 ```
 
-`/setup` offers three paths: read your `documents/` folder if you have one populated (CV PDF, LinkedIn export, diplomas, reference letters, past applications), import a single CV pasted in chat, or walk through an interview. It auto-detects what you have and asks. Documents-folder mode is idempotent and safe to re-run as you add more material; see `documents/README.md` for the layout.
+`/setup` offers three paths: read your `documents/` folder if you have one populated (resume PDF, LinkedIn export, diplomas, reference letters, past applications), import a single resume pasted in chat, or walk through an interview. It auto-detects what you have and asks. Documents-folder mode is idempotent and safe to re-run as you add more material; see `documents/README.md` for the layout.
 
-### 4. Search for jobs
+### 3. Search for jobs
 
 ```bash
 /scrape
 ```
 
-This searches multiple job portals for positions matching your profile, deduplicates results, and presents them sorted by fit. Pick a match to run `/apply` on it directly.
+This searches US job boards (LinkedIn, Indeed, Glassdoor, ZipRecruiter, Google Jobs, company career pages) for positions matching your profile, deduplicates results, and presents them sorted by fit. Pick a match to run `/apply` on it directly.
 
-### 5. Apply to a job
+### 4. Apply to a job
 
 ```bash
-/apply https://jobindex.dk/job/1234567
+/apply https://www.linkedin.com/jobs/view/1234567890
 ```
 
-If the URL can't be fetched (some job portals block automated access), you can paste the job description directly instead:
+If the URL can't be fetched (some job boards block automated access), you can paste the job description directly instead:
 
 ```bash
 /apply <paste the full job description here>
 ```
 
-This runs the full workflow: evaluate fit, draft CV + cover letter, review with a second agent, revise, and present the final output.
+This runs the full workflow: evaluate fit, draft resume + cover letter, review with a second agent, revise, and present the final output.
 
 ## Other commands
 
@@ -102,7 +94,7 @@ ai-job-search/
 ├── .claude/
 │   ├── commands/
 │   │   ├── apply.md                   # /apply workflow (drafter-reviewer)
-│   │   ├── setup.md                   # /setup onboarding (documents folder, CV import, or interview)
+│   │   ├── setup.md                   # /setup onboarding (documents folder, resume import, or interview)
 │   │   ├── expand.md                  # /expand competency enrichment from documents and online presence
 │   │   └── reset.md                   # /reset wipe profile data or documents folder
 │   ├── skills/
@@ -112,25 +104,20 @@ ai-job-search/
 │   │   │   ├── 02-behavioral-profile.md# PI/DISC/personality assessment
 │   │   │   ├── 03-writing-style.md    # Tone, structure, do's and don'ts
 │   │   │   ├── 04-job-evaluation.md   # Scoring framework for job fit
-│   │   │   ├── 05-cv-templates.md     # LaTeX CV structure + tailoring rules
+│   │   │   ├── 05-cv-templates.md     # LaTeX resume structure + tailoring rules
 │   │   │   ├── 06-cover-letter-templates.md # LaTeX cover letter templates
 │   │   │   └── 07-interview-prep.md   # STAR examples + interview framework
-│   │   ├── job-scraper/               # Job search orchestration
+│   │   ├── job-scraper/               # US job search orchestration (WebSearch-based /scrape)
 │   │   └── upskill/                   # /upskill skill gap analysis and learning plan
 │   └── settings.local.json            # Claude Code permissions
-├── .agents/skills/                    # Job portal CLI tools (Denmark)
-│   ├── jobbank-search/                # Akademikernes Jobbank
-│   ├── jobdanmark-search/             # Jobdanmark.dk
-│   ├── jobindex-search/               # Jobindex.dk
-│   └── jobnet-search/                 # Jobnet.dk (government portal)
 ├── cv/
-│   └── main_example.tex               # moderncv LaTeX template
+│   └── main_example.tex               # moderncv LaTeX resume template (US Letter)
 ├── cover_letters/
 │   ├── cover.cls                      # Custom cover letter LaTeX class
 │   └── OpenFonts/                     # Lato + Raleway fonts
 ├── documents/                         # Career source materials for /setup Path A and /expand
 │   ├── README.md                      # Folder layout instructions
-│   ├── cv/                            # Master CV (PDF or .tex)
+│   ├── cv/                            # Master resume (PDF or .tex)
 │   ├── linkedin/                      # LinkedIn profile export (PDF)
 │   ├── diplomas/                      # Degree certificates and transcripts
 │   ├── references/                    # Reference letters
@@ -151,18 +138,18 @@ The `/apply` command runs a **drafter-reviewer workflow** with mandatory PDF com
 
 1. **Parse** the job posting (URL or text)
 2. **Evaluate fit** against your profile (skills, experience, culture, location, career alignment)
-3. **Draft** a tailored CV and cover letter in LaTeX
+3. **Draft** a tailored resume and cover letter in LaTeX
 4. **Spawn a reviewer agent** that researches the company and critiques the drafts
 5. **Revise** based on the reviewer's feedback
-6. **Compile and inspect** both PDFs: lualatex for the CV, xelatex for the cover letter. Claude reads the rendered pages and iterates on the LaTeX until the CV is exactly 2 pages with no orphaned entry titles, and the cover letter is exactly 1 page with the signature visible and fonts consistent.
+6. **Compile and inspect** both PDFs: lualatex for the resume, xelatex for the cover letter. Claude reads the rendered pages and iterates on the LaTeX until the resume fits its page budget (1 page by default, up to 2 for senior/extensive profiles) with no orphaned entry titles, and the cover letter is exactly 1 page with the signature visible and fonts consistent.
 7. **Present** the final output with a verification checklist
 
-All claims in the CV and cover letter are verified against your actual profile. The system never fabricates skills or experience.
+All claims in the resume and cover letter are verified against your actual profile. The system never fabricates skills or experience.
 
 ### What makes this workflow different
 
 - **PDF verification loop.** Most LaTeX-resume templates produce "looks fine in the .tex" output that breaks in the PDF: job titles orphan to the next page, cover letters spill onto page 2, bullet fonts silently fall back to the body font. The `/apply` command compiles and visually inspects every PDF and applies targeted fixes (`\needspace`, `\enlargethispage`, font-matching wrappers for list items) until the layout is clean. This runs automatically on every application.
-- **Relevance-weighted CV cutting.** When a CV overflows 2 pages, the workflow does not cut mechanically from the "oldest" section. It scores each candidate line by (a) relevance to the target posting, (b) uniqueness in the document, and (c) whether the cover letter depends on it, and cuts the lowest-total-score line first. An older-role bullet that hits posting keywords survives ahead of a recent-role bullet that does not.
+- **Relevance-weighted resume cutting.** When a resume overflows its page budget, the workflow does not cut mechanically from the "oldest" section. It scores each candidate line by (a) relevance to the target posting, (b) uniqueness in the document, and (c) whether the cover letter depends on it, and cuts the lowest-total-score line first. An older-role bullet that hits posting keywords survives ahead of a recent-role bullet that does not.
 - **Drafter-reviewer separation.** The drafter writes; a second Claude agent, spawned with a fresh context, researches the company and critiques the drafts. The drafter then revises. This catches missed keywords, weak framing, and generic language that a single pass often leaves in.
 - **Token-efficient reviewer dispatch.** The reviewer agent receives drafts inline rather than re-reading them, and the verification checklist runs once at the end of the workflow rather than being duplicated by both agents. Note: the new compile-and-inspect step in Step 5 spends some of those savings on PDF rendering and layout iteration — the workflow trades some end-to-end token cost for a real reduction in broken PDFs reaching the user.
 
@@ -175,7 +162,7 @@ If you prefer editing files directly instead of using `/setup`:
 | File | What to change |
 |------|---------------|
 | `CLAUDE.md` | Your full profile (name, education, experience, skills, goals) |
-| `01-candidate-profile.md` | Structured version of your CV data |
+| `01-candidate-profile.md` | Structured version of your resume data |
 | `02-behavioral-profile.md` | Your behavioral assessment or self-assessment |
 | `04-job-evaluation.md` | Skill match areas, career goals, motivation filters |
 | `05-cv-templates.md` | Profile statement templates for different role types |
@@ -190,19 +177,19 @@ As your priorities evolve, you can reconfigure just the job search without re-ru
 /setup --section search
 ```
 
-This re-runs the search configuration interview: which roles to target, which skills to search for, which locations, and which portals. It also suggests role types you may not have considered based on your profile.
+This re-runs the search configuration interview: which roles to target, which skills to search for, which locations (including remote), and which boards. It also suggests role types you may not have considered based on your profile.
 
 ### LaTeX templates
 
-The CV uses [moderncv](https://ctan.org/pkg/moderncv) (banking style). The cover letter uses a custom `cover.cls` with Lato/Raleway fonts. You can replace these with your own templates; just update the guidance in `05-cv-templates.md` and `06-cover-letter-templates.md`.
+The resume uses [moderncv](https://ctan.org/pkg/moderncv) (banking style, US Letter). The cover letter uses a custom `cover.cls` with Lato/Raleway fonts. You can replace these with your own templates; just update the guidance in `05-cv-templates.md` and `06-cover-letter-templates.md`.
 
-### Job search tools
+### Job search
 
-The four CLI tools in `.agents/skills/` are specific to the **Danish job market** (Jobbank, Jobdanmark, Jobindex, Jobnet). They demonstrate the pattern for building job portal integrations. If you're in a different country, you can build equivalent tools for your local job portals using the same structure.
+Job search runs through the WebSearch-based `/scrape` skill, which targets US boards (LinkedIn, Indeed, Glassdoor, ZipRecruiter, Google Jobs) and company career pages - no API keys or extra runtimes. Tune which boards, roles, and locations it searches by editing `.claude/skills/job-scraper/search-queries.md` (or re-run `/setup --section search`).
 
 ### Salary benchmarking
 
-The salary tool works with any salary data you provide (union statistics, Glassdoor exports, personal research, etc.). See `tools/README_SALARY_TOOL.md` for the expected format and setup. If you don't have salary data, the salary step is simply skipped.
+The salary tool works with any salary data you provide (Glassdoor, Levels.fyi, Payscale, BLS OEWS, H-1B LCA disclosure data, personal research, etc.). See `tools/README_SALARY_TOOL.md` for the expected format and setup. If you don't have salary data, the salary step is simply skipped.
 
 ### Starting over
 
@@ -224,7 +211,7 @@ The single biggest factor in output quality is how much detail you put into your
 
 - **Role descriptions:** Don't just list job titles. Describe what you actually did in each position: specific projects, tools used, responsibilities, and measurable achievements. The more material you provide, the more precisely the system can reframe your experience for different roles.
 - **Skills in context:** Instead of listing "Python" or "project management," describe how and where you applied them. "Built ML pipelines for customer churn prediction in Python using scikit-learn" gives the system far more to work with than "Python, machine learning."
-- **All onboarding paths work:** Whether you point `/setup` at your `documents/` folder, paste a single CV, or walk through the interview, the principle is the same: richer input produces sharper output.
+- **All onboarding paths work:** Whether you point `/setup` at your `documents/` folder, paste a single resume, or walk through the interview, the principle is the same: richer input produces sharper output.
 
 ### Career path discovery
 
@@ -237,7 +224,7 @@ To get the most from this, invest time during `/setup` in describing not just yo
 
 ## Acknowledgements
 
-- [Mikkel Krogholm](https://github.com/mikkelkrogsholm) ([skills repo](https://github.com/mikkelkrogsholm/skills)) for the job search CLI skills
+- [Mikkel Krogholm](https://github.com/mikkelkrogsholm) ([skills repo](https://github.com/mikkelkrogsholm/skills)) for the original job search skills this framework grew from
 - Built with [Claude Code](https://claude.com/claude-code) by [Anthropic](https://anthropic.com)
 
 ## License

@@ -76,7 +76,7 @@ Degree certificates, transcripts, and any official qualifications.
 - Grades or distinctions (if visible)
 - Institution names (official spelling)
 
-**Naming:** Use descriptive names, e.g. `msc_physics_ucph_2025.pdf`, `bsc_physics_ucph_2016.pdf`. Naming does not affect parsing.
+**Naming:** Use descriptive names, e.g. `ms_cs_mit_2025.pdf`, `bs_physics_berkeley_2016.pdf`. Naming does not affect parsing.
 
 ---
 
@@ -91,7 +91,7 @@ Reference letters from former managers, supervisors, or collaborators.
 - Specific quotes and assessments (added to the references section of `01-candidate-profile.md`)
 - Competency language used by referees (adds behavioral signal to `02-behavioral-profile.md`)
 
-**Naming:** Use the referee's name, e.g. `reference_ole_frandsen.pdf`.
+**Naming:** Use the reference's name, e.g. `reference_jane_smith.pdf`.
 
 ---
 

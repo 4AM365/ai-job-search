@@ -245,11 +245,12 @@ Walk through each section conversationally. Ask questions naturally, not as a fo
 ### Section 1: Identity & Contact
 Ask about:
 - Full name
-- Location (city, country)
+- Location (city, state)
 - Phone, email, LinkedIn, GitHub
+- US work authorization (citizen / green card / needs visa sponsorship)
 - Languages spoken (with proficiency levels)
 - Current employment status
-- Family/commute constraints (if any)
+- Location & remote preferences (on-site / hybrid / remote, commute radius, relocation)
 
 ### Section 2: Education
 For each degree:
@@ -313,7 +314,8 @@ Ask about:
 - **Key skills as search terms:** "Which of your skills are most likely to appear in job postings?" Pick 3-5 that are distinctive and searchable.
 - **Target companies (optional):** "Are there specific companies you'd like to monitor for openings?"
 - **Geographic scope:** "Which cities or regions should I search in? How far are you willing to commute?" Use this to define the location filter tiers (ideal, acceptable, borderline, too far).
-- **Job portals:** "The framework includes tools for Danish job portals (Jobindex, Jobbank, Jobdanmark, Jobnet). Are these the right ones for you, or do you use other sites?" Note: if the user is outside Denmark, acknowledge that the built-in CLI tools are Denmark-specific and suggest they can add their own portal integrations or rely on LinkedIn/Google site-searches.
+- **Job boards:** "Which US job boards should I search? The defaults are LinkedIn, Indeed, Glassdoor, ZipRecruiter, Google Jobs, and company career pages. Any niche boards to add (e.g. Built In, Wellfound for startups, USAJOBS for federal, Dice for IT)?" Search runs through the WebSearch-based `/scrape` skill - there are no CLI tools to install. Capture the chosen boards into `search-queries.md`.
+- **Work authorization & remote:** "What's your US work authorization (citizen / green card / need visa sponsorship)? And are you targeting on-site, hybrid, remote, or open to relocation?" These drive the work-authorization gate and location filter in `04-job-evaluation.md`.
 
 **Important:** Also suggest role types the user may not have considered, based on their skill profile. For example:
 - If they have strong Python + domain expertise: "Have you considered roles like 'Technical Consultant' or 'Solutions Engineer' in your domain?"
@@ -358,13 +360,14 @@ Replace placeholder personal data with their actual name, contact info, and add 
 Replace all placeholder tokens in the search queries file with the user's actual information from Section 9 (or the equivalent follow-up questions in Path A's Step A7):
 - Replace `[YOUR_PRIMARY_ROLE_TYPE]`, `[YOUR_PRIMARY_JOB_TITLE]`, etc. with actual role titles
 - Replace `[YOUR_KEY_SKILL]`, `[YOUR_DOMAIN_KEYWORD_1]`, etc. with actual skills and domain terms
-- Replace `[YOUR_CITY]`, `[YOUR_COUNTRY]`, `[YOUR_REGION]` with actual location
-- Fill in the location filter tiers (ideal, acceptable, borderline, too far) based on commute constraints
+- Replace `[YOUR_CITY]`, `[YOUR_STATE]`, `[YOUR_METRO]` with the user's actual US location; set the Remote/Hybrid category based on their preference
+- Fill in the location filter tiers (ideal, acceptable, borderline, too far) based on commute and remote preferences, and note work-authorization needs
 - Organize queries into priority categories matching the user's career direction:
   - Priority 1: Their strongest/most desired role direction
   - Priority 2: Their domain expertise
   - Priority 3: Adjacent roles they could pivot into
-  - Priority 4: Broader roles (wider net)
+  - Priority 4: Remote / hybrid
+  - Priority 5: Broader roles (wider net)
 
 ---
 
@@ -378,9 +381,9 @@ Present a summary:
 > - `.claude/skills/job-application-assistant/01-candidate-profile.md` - Structured profile
 > - `.claude/skills/job-application-assistant/02-behavioral-profile.md` - Behavioral assessment
 > - `.claude/skills/job-application-assistant/04-job-evaluation.md` - Personalized evaluation framework
-> - `.claude/skills/job-application-assistant/05-cv-templates.md` - CV templates with your profile statements
+> - `.claude/skills/job-application-assistant/05-cv-templates.md` - Resume templates with your profile statements
 > - `.claude/skills/job-application-assistant/07-interview-prep.md` - STAR examples from your experience
-> - `cv/main_example.tex` - Your LaTeX CV template
+> - `cv/main_example.tex` - Your LaTeX resume template
 > - `.claude/skills/job-scraper/search-queries.md` - Job search queries for `/scrape`
 >
 > **Try it out:**

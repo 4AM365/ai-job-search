@@ -48,9 +48,21 @@ Does the role and company culture match the behavioral profile?
 
 ### 4. Location & Logistics (Pass/Fail + Notes)
 - Within commute range: PASS
-- Remote with occasional office: PASS
-- Requires relocation: FAIL (deal-breaker)
-- Frequent international travel: FLAG (discuss with user)
+- Remote, or hybrid with occasional office: PASS
+- Requires relocation: FAIL (deal-breaker) unless the user has opted into relocation
+- Frequent travel: FLAG (discuss with user)
+
+**US-specific signals to capture (note even when not a hard pass/fail):**
+- **On-site / hybrid / remote** - and how many days in office
+- **Posted salary range** - increasingly required by state law (CA, NY, CO, WA, etc.); compare against the user's target
+- **Relocation** - expected, offered, or not mentioned
+
+### 4b. Work Authorization (Pass/Fail)
+A hard gate in the US market. Check the posting and company for:
+- "Must be authorized to work in the US" / "no sponsorship available" -> **FAIL** if the user needs sponsorship
+- "US citizenship required" / security clearance -> **FAIL** if the user does not qualify
+- "Will sponsor / E-Verify / visa transfer OK" -> PASS, note it
+- If unstated, FLAG to verify before investing in an application. Match against the candidate's **Work authorization** field in `01-candidate-profile.md`.
 
 ### 5. Career Alignment & Motivation (0-100)
 Does this role advance career goals and contain tasks that energize?
@@ -129,7 +141,7 @@ Present the evaluation as:
 
 ### Company Research Checklist
 - [ ] Checked company website (mission, values, recent news)
-- [ ] Checked review sites (Glassdoor, Jobindex, etc.)
+- [ ] Checked review sites (Glassdoor, Indeed, Comparably, Blind, Levels.fyi)
 - [ ] Checked LinkedIn for team size, recent hires, connections
 - [ ] Checked media for restructuring, growth, or workplace issues
 - [ ] Identified network contacts who may know the team/manager

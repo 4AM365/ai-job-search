@@ -12,7 +12,7 @@ instructions on the expected format and how to convert from Excel.
 
 Usage:
     python salary_lookup.py "Company Name"
-    python salary_lookup.py "Company Name" --city "København"
+    python salary_lookup.py "Company Name" --city "Austin"
     python salary_lookup.py "Company Name" --json
     python salary_lookup.py --list-all
 """
@@ -26,19 +26,16 @@ from pathlib import Path
 
 DATA_FILE = Path(__file__).parent / "salary_data.json"
 
-# Common Danish <-> anglicized spelling variants
-SPELLING_VARIANTS = {
-    "ø": "o", "æ": "ae", "å": "aa",
-    "ö": "o", "ä": "ae", "ü": "u",
-}
-
-# Legal suffixes and noise to strip when matching company names
+# Legal suffixes and noise to strip when matching US company names
 STRIP_PATTERNS = [
-    r"\ba/s\b", r"\baps\b", r"\bi/s\b", r"\bp/s\b", r"\bk/s\b",
-    r"\bivs\b", r"\bamba\b", r"\ba\.m\.b\.a\.\b",
-    r"\(vg\)", r"\(.*?\)",  # (VG) and other parentheticals
-    r"\bdanmark\b", r"\bdenmark\b", r"\bscandinavia\b", r"\bnordic\b",
-    r"\bgroup\b", r"\bholding\b",
+    r"\binc\b", r"\bincorporated\b",
+    r"\bllc\b", r"\bllp\b", r"\blp\b", r"\bplc\b", r"\bpllc\b", r"\bpc\b",
+    r"\bcorp\b", r"\bcorporation\b",
+    r"\bco\b", r"\bcompany\b",
+    r"\bltd\b", r"\blimited\b",
+    r"\busa\b",
+    r"\(.*?\)",  # parentheticals
+    r"\bnorth america\b", r"\bamericas\b", r"\bgroup\b", r"\bholdings?\b",
     r",\s*.*$",  # everything after comma (sub-entities)
 ]
 
@@ -57,21 +54,25 @@ def load_data():
         return json.load(f)
 
 
+def fold_diacritics(s):
+    """Fold accented characters to plain ASCII (e.g. é->e, ñ->n) for robust matching."""
+    s = unicodedata.normalize("NFKD", s)
+    return "".join(c for c in s if not unicodedata.combining(c))
+
+
 def normalize(s):
     """Normalize string for robust fuzzy matching."""
     s = s.lower().strip()
     for pat in STRIP_PATTERNS:
         s = re.sub(pat, "", s)
-    s = re.sub(r"[^a-zæøåöäü0-9]", "", s)
+    s = fold_diacritics(s)
+    s = re.sub(r"[^a-z0-9]", "", s)
     return s.strip()
 
 
 def anglicize(s):
-    """Convert Danish/Nordic characters to anglicized equivalents."""
-    s = s.lower()
-    for danish, english in SPELLING_VARIANTS.items():
-        s = s.replace(danish, english)
-    return s
+    """Fold accented/diacritic characters to plain ASCII for robust matching."""
+    return fold_diacritics(s.lower())
 
 
 def extract_core_words(s):
@@ -79,7 +80,8 @@ def extract_core_words(s):
     s = s.lower()
     for pat in STRIP_PATTERNS:
         s = re.sub(pat, "", s)
-    words = re.findall(r"[a-zæøåöäü0-9]+", s)
+    s = fold_diacritics(s)
+    words = re.findall(r"[a-z0-9]+", s)
     return [w for w in words if len(w) > 1]
 
 
@@ -261,7 +263,7 @@ def main():
         if args.city:
             print(f"  (filtered by city: {args.city})")
         print("\nTry a shorter or different name. Company names in the dataset")
-        print("may include legal suffixes like 'A/S' or 'ApS'.")
+        print("may include legal suffixes like 'Inc', 'LLC', or 'Corp'.")
         sys.exit(1)
 
     if args.json:

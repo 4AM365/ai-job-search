@@ -144,10 +144,12 @@ The font wrapper is mandatory — if you just move `\begin{itemize}` outside `\l
 - Underscore: `\_`
 - Ampersand: `\&`
 
+### Closing (US convention)
+- Use a standard US closing: "Sincerely," (most common) or "Best regards,"
+- Use US date format: Month Day, Year (e.g. "June 7, 2026")
+
 ### Non-English Cover Letters
-- Same template structure, just write content in the posting's language
-- Adjust date format to local convention
-- Adjust closing to local convention (e.g. "Med venlig hilsen," for Danish)
+- Only if the posting itself is in another language: keep the same template structure, write content in the posting's language, and adjust the date format and closing to that language's convention
 
 ## Checklist Before Finalizing
 - [ ] No em-dashes (use commas or periods instead)
